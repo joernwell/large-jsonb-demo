@@ -1,0 +1,88 @@
+# Maven target directory
+/target/
+
+# Maven specific files
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+ci_settings.xml
+
+# Logs
+logs
+*.log
+*.log.*
+
+# IntelliJ IDEA files
+.idea/
+*.iml
+*.iws
+out/
+
+# VS Code settings
+.vscode/
+
+# Eclipse files
+.classpath
+.project
+.settings/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Spring Boot specific files
+*.jar
+*.war
+
+# Temporary files and cache
+*.tmp
+*.bak
+*.swp
+
+# Configuration files
+.env
+*.properties
+*.yml
+
+# Generated files
+*.class
+*.coverage
+*.hprof
+
+# Test coverage reports
+*.exec
+*.ec
+*.coverage
+*.clover
+/coverage-reports/
+
+# SonarQube
+/.scannerwork/
+/.sonarlint/
+
+# Logs and debug output
+hs_err_pid*.log
+
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon files
+Icon?
+._*
+
+# Thumbnails
+Thumbs.db
+
+# macOS metadata files
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+.fseventsd
+
+# Apple MFS files
+*/.apdisk
