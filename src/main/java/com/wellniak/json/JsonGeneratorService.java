@@ -1,5 +1,6 @@
 package com.wellniak.json;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,21 +11,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Service
 public class JsonGeneratorService {
-
 	private static final int NUM_ATTRIBUTES = 50;
 	private static final Map<String, Integer> ATTRIBUTE_TYPES = new HashMap<>();
 	private static final Random RANDOM = new Random();
 
 	private final JsonTestRepository jsonTestRepository;
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	
+	@Autowired
+	private ObjectMapper objectMapper;
+	
+    @PersistenceContext
+    private EntityManager entityManager;
 
 	static {
-		// Feste Typenzuweisung für die 50 Attribute
+		// Fixed type assignments for the 50 attributes
 		ATTRIBUTE_TYPES.put("attribute_1", 0); // String
 		ATTRIBUTE_TYPES.put("attribute_2", 1); // Numeric String
 		ATTRIBUTE_TYPES.put("attribute_3", 0); // String
@@ -36,9 +45,9 @@ public class JsonGeneratorService {
 		ATTRIBUTE_TYPES.put("attribute_9", 3); // Nested JSON
 		ATTRIBUTE_TYPES.put("attribute_10", 1); // Integer
 
-		// Weitere 40 zufällig gewählte Zuordnungen
+		// Additional 40 randomly assigned attributes
 		for (int i = 11; i <= NUM_ATTRIBUTES; i++) {
-			int valueType = i % 4; // Zyklische Zuweisung: String, Integer, Boolean, Nested JSON
+			int valueType = i % 4; // Cyclical assignment: String, Integer, Boolean, Nested JSON
 			ATTRIBUTE_TYPES.put("attribute_" + i, valueType);
 		}
 	}
@@ -50,16 +59,21 @@ public class JsonGeneratorService {
 
 	@Transactional
 	public void generateAndSaveJson(int count) {
-		List<JsonTest> batchList = new ArrayList<>();
+		List<JsonTest> batchList = new ArrayList<>(count);
 
 		for (int i = 0; i < count; i++) {
 			ObjectNode jsonData = generateRandomJson(1, 4);
 
+			// Use a StringWriter and JsonGenerator for streaming
 			String jsonString;
-			try {
-				jsonString = objectMapper.writeValueAsString(jsonData);
+			try (StringWriter writer = new StringWriter();
+					JsonGenerator generator = objectMapper.getFactory().createGenerator(writer)) {
+
+				objectMapper.writeValue(generator, jsonData); // Stream JSON to writer
+				jsonString = writer.toString();
+
 			} catch (Exception e) {
-				throw new RuntimeException("Fehler beim Konvertieren des JSON in einen String", e);
+				throw new RuntimeException("Error converting JSON to string", e);
 			}
 
 			JsonTest jsonTest = new JsonTest();
@@ -69,6 +83,9 @@ public class JsonGeneratorService {
 
 		if (!batchList.isEmpty()) {
 			jsonTestRepository.saveAll(batchList);
+			jsonTestRepository.flush();
+			batchList.clear();
+			entityManager.clear();
 		}
 	}
 
