@@ -9,7 +9,7 @@ This generated data can be used to test the performance of `JSONB` attributes in
 
 - **Random JSON Generation**: Generates JSON data with 20 attributes, including strings, numeric values, booleans, and nested JSON objects. A JSON is approximately 170kByte in size.
 - **Batch Processing**: Enables bulk storage of JSON data in user-defined batches.
-- **Curl with adjustable parameters**: Call with curl. The number of entries and the bulk size can be passed as parameters.
+- **Curl with adjustable parameters**: Call with `curl`. The number of entries and the bulk size can be passed as parameters.
 
 ## Getting Started
 
@@ -181,7 +181,7 @@ _Note_: `vacuum full` locks the table or the toast table while `vacuum` is runni
 
 - Do not use a `GIN` index: GIN is not an index to optimize the exact search for data records via attributes in JSON. The GIN index is used for special JSON comparisons (e.g. `@>` operators). The GIN index requires additional storage (factor 3). The execution time for updates is also significantly longer than without the GIN index.
 - For exact searches, create a _standard_ index for each required attribute in the `where` clause of the `select` statement. Searching for JSON attributes is then just as fast as searching via table columns.
-- Run `vacuum full` on the `toast` tables (and not on the full table). Updating the 'toats' table is much faster than optimizing the entire table.
+- Run `vacuum full` on the `toast` tables (and not on the full table). Updating the `toast` table is much faster than optimizing the entire table.
 
 ## How It Works (Java code)
 
