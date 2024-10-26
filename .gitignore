@@ -42,11 +42,6 @@ Thumbs.db
 *.bak
 *.swp
 
-# Configuration files
-.env
-*.properties
-*.yml
-
 # Generated files
 *.class
 *.coverage
@@ -86,3 +81,4 @@ Thumbs.db
 
 # Apple MFS files
 */.apdisk
+/.factorypath
