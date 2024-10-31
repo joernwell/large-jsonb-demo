@@ -118,7 +118,7 @@ SELECT pg_size_pretty(pg_total_relation_size('json_test')) AS main_table_size;
 - Exact search of all rows where `attribute_2_2 = 27653`: `16 rows` in `101ms`
 - Exact search of all rows where `attribute_2_2 = 24321`: `10 rows` in `95ms`
 - Exact search of all rows where `attribute_2_2 = 24321` after `vacuum full`: `10 rows` in `68ms`
-- Exact search over a not-index attribute: `3m 23s`
+- Exact search over a not-indexed attribute: `3m 23s`
 
 #### Other resource crtical actions
 
@@ -147,7 +147,7 @@ Note: Updating the JSONB data multiplies the memory requirements of the table (d
 - Total table storage: `8.3 GB`
 - Exact search of all rows: `44ms`
 - New attribute added with jsonb_set: `3m 4s` (`16 GB` after the update)
-- Vacuum full: `2m 58s`
+- Vacuum full: `2m 58s` (`8 GB` after the update)
 - New attribute added with `||`: `3m 2s` (`16 GB` after the update)
 - Another attribute added with `||`: `3m 5s` (`24 GB` after the update)
 - `vacuum analyze`: `1m 16s`
@@ -208,6 +208,39 @@ The application consists of two main components:
    - You can set the number of records and batch size by providing these values as URL parameters.
    - JSON data is generated in parallel to improve performance.
 
+## Actuator Endpoints
+
+The application uses [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html) to provide useful management and monitoring endpoints. The following endpoints are exposed and can be accessed through HTTP requests:
+
+**Health Check**: Provides the health status of the application, useful for monitoring the application's availability. Returns `UP` if the application is running properly, otherwise provides details on any issues.
+
+ ```bash
+ curl http://localhost:8080/actuator/health
+ ```
+
+**Application Info**: Displays custom application information, including metadata like application name, version, and description. Useful for viewing configured metadata about the application.
+
+ ```bash
+ curl http://localhost:8080/actuator/info
+ ```
+
+**Metrics**: Provides metrics data about the application’s performance, memory usage, and other metrics. Returns a list of available metrics; specific metrics can be accessed by appending the metric name.
+
+ ```bash
+ curl http://localhost:8080/actuator/metrics
+ # Example for a specific metric:
+ curl http://localhost:8080/actuator/metrics/jvm.memory.used
+ ```
+
+**Shutdown**: Allows graceful shutdown of the application. This endpoint should be used cautiously, especially in production. Stops the application when called with a `POST` request.
+
+     ```bash
+     curl -X POST http://localhost:8080/actuator/shutdown
+     ```
+
+### Security Note
+
+These actuator endpoints should be secured when running in production, as they provide sensitive information and control over the application. Consider enabling authentication and restricting access based on user roles or network restrictions.
 
 ## License
 

@@ -1,23 +1,25 @@
 package com.wellniak.json;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
 import java.util.UUID;
+
 import org.hibernate.annotations.Type;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Json_Test")
+@Table(name = "json_test")
 public class JsonTest {
 
     @Id
     @GeneratedValue
     private UUID id;
 
-    @Type(JsonBinaryType.class)  // Verwende den JSONB-Typ direkt
+    @Type(JsonBinaryType.class)  
     @Column(columnDefinition = "jsonb")
     private String data;
 
