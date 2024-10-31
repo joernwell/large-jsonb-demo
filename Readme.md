@@ -74,7 +74,7 @@ This command will:
   - Stop the Docker container
   - Remove the Docker volume 
 
-The next call of `male start` will create a new, empty database.
+The next call of `make start` will create a new, empty database.
 
 
 ## Usage
