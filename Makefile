@@ -1,5 +1,7 @@
 # Define the paths and commands
 SPRING_BOOT_APP = mvn spring-boot:run
+PORT = 8080
+HOST = localhost
 
 # Default target
 .PHONY: start
@@ -9,8 +11,6 @@ start: docker-up spring-boot
 .PHONY: docker-up
 docker-up:
 	docker-compose up -d || true
-	@echo "Waiting for Docker services to start..."
-	@sleep 4  # Adjust sleep if more time is needed for containers to initialize
 
 # Start Spring Boot application
 .PHONY: spring-boot
@@ -19,10 +19,15 @@ spring-boot:
 
 # Stop all services
 .PHONY: stop
-stop: docker-down
+stop: spring-boot-stop docker-down
+
+# Stop the Spring Boot application using the /actuator/shutdown endpoint
+.PHONY: spring-boot-stop
+spring-boot-stop:
+	@echo "Stopping Spring Boot application..."
+	@curl -X POST http://$(HOST):$(PORT)/actuator/shutdown || echo "Application is not running or shutdown endpoint is disabled."
 
 # Stop Docker Compose services
 .PHONY: docker-down
 docker-down:
 	docker-compose down
-
