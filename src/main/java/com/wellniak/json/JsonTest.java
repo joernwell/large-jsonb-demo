@@ -15,28 +15,28 @@ import jakarta.persistence.Table;
 @Table(name = "json_test")
 public class JsonTest {
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+	@Id
+	@GeneratedValue
+	private UUID id;
 
-    @Type(JsonBinaryType.class)  
-    @Column(columnDefinition = "jsonb")
-    private String data;
+	@Type(JsonBinaryType.class)
+	@Column(columnDefinition = "jsonb")
+	private String data;
 
-    // Getter und Setter
-    public UUID getId() {
-        return id;
-    }
+	// Getter und Setter
+	public UUID getId() {
+		return id;
+	}
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
-    public String getData() {
-        return data;
-    }
+	public String getData() {
+		return data;
+	}
 
-    public void setData(String data) {
-        this.data = data;
-    }
+	public void setData(String data) {
+		this.data = data;
+	}
 }

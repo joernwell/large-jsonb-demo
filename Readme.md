@@ -63,9 +63,19 @@ Stop the application:
   make stop
   ```
 
-**4. Access the endpoint**
+Reset the database:
 
-You can now use the `/generate-json` endpoint to trigger JSON generation.
+  ```bash
+  make reset
+  ```
+This command will:
+  
+  - Stop the Spring Boot application
+  - Stop the Docker container
+  - Remove the Docker volume 
+
+The next call of `male start` will create a new, empty database.
+
 
 ## Usage
 
@@ -105,10 +115,11 @@ select * from json_test where data->'attribute_1_4'->>'attribute_2_2' > '30000'
 SELECT pg_size_pretty(pg_total_relation_size('json_test')) AS main_table_size;
 ```
 
-## Performance test results
+## Performance test results (with version 0.1.0)
 
 #### Test scenario
 
+- Postgres version: 15
 - JSON object with approximately `185 kB`
 - Number of rows: `1.050.000`
 - Total table storage: `171 GB` (including the index storage)
