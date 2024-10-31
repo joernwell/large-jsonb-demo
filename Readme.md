@@ -18,6 +18,7 @@ Before you can run the JSON Generator Service, ensure you have the following ins
 - **Java Development Kit (JDK) 21**: This project requires JDK 21. 
 - **Apache Maven**: The project uses Maven for dependency management and build automation. 
 - **Docker and Docker Compose**: Docker is required to run PostgreSQL as a containerized service for the application’s database. Make sure Docker Compose is also installed (often included with Docker Desktop).
+- **Make**: `Make` is used to simplify command execution, such as building, starting, and stopping the application with defined commands.
 
 Once these prerequisites are installed, you’re ready to proceed with building and running the application.
 
@@ -147,7 +148,7 @@ Note: Updating the JSONB data multiplies the memory requirements of the table (d
 - Total table storage: `8.3 GB`
 - Exact search of all rows: `44ms`
 - New attribute added with jsonb_set: `3m 4s` (`16 GB` after the update)
-- Vacuum full: `2m 58s` (`8 GB` after the update)
+- Vacuum full: `2m 58s` (`8 GB` after the vacuum)
 - New attribute added with `||`: `3m 2s` (`16 GB` after the update)
 - Another attribute added with `||`: `3m 5s` (`24 GB` after the update)
 - `vacuum analyze`: `1m 16s`
