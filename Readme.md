@@ -11,6 +11,16 @@ This generated data can be used to test the performance of `JSONB` attributes in
 - **Batch Processing**: Enables bulk storage of JSON data in user-defined batches.
 - **Curl with adjustable parameters**: Call with `curl`. The number of entries and the bulk size can be passed as parameters.
 
+## Prerequisites
+
+Before you can run the JSON Generator Service, ensure you have the following installed:
+
+- **Java Development Kit (JDK) 21**: This project requires JDK 21. 
+- **Apache Maven**: The project uses Maven for dependency management and build automation. 
+- **Docker and Docker Compose**: Docker is required to run PostgreSQL as a containerized service for the application’s database. Make sure Docker Compose is also installed (often included with Docker Desktop).
+
+Once these prerequisites are installed, you’re ready to proceed with building and running the application.
+
 ## Getting Started
 
 **1. Clone the Repository**

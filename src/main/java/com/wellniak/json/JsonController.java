@@ -31,6 +31,12 @@ public class JsonController {
             jsonGeneratorService.generateAndSaveJson(bulkSize);
             logger.info("{} entries written", bulkSize * (i + 1));
         }
+        
+        int remainingRecords = numRecords % bulkSize;
+        if (remainingRecords > 0) {
+            jsonGeneratorService.generateAndSaveJson(remainingRecords);
+            logger.info("{} entries written (remaining)", numRecords);
+        }
 
         return "JSON was generated and saved to the database.";
     }
