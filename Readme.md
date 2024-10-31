@@ -235,9 +235,9 @@ The application uses [Spring Boot Actuator](https://docs.spring.io/spring-boot/d
 
 **Shutdown**: Allows graceful shutdown of the application. This endpoint should be used cautiously, especially in production. Stops the application when called with a `POST` request.
 
-     ```bash
-     curl -X POST http://localhost:8080/actuator/shutdown
-     ```
+ ```bash
+ curl -X POST http://localhost:8080/actuator/shutdown
+ ```
 
 ### Security Note
 
