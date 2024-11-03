@@ -1,6 +1,8 @@
 PORT = 8080
 HOST = localhost
 
+CHECK_NVD_KEY := $(shell grep -c "<id>nvd</id>" ~/.m2/settings.xml || echo 0)
+
 # ================================
 # Main commands
 # ================================
@@ -44,6 +46,25 @@ generate:
 .PHONY: release ## Prepares and performs a release without automatically pushing changes to Git
 release:
 	@$(MAKE) mvn-release
+
+.PHONY: security ## Performs security check. Make sure that the NVD API key is stored in the settings.xml
+security:
+	@CHECK_NVD_KEY=$$(grep -c "<id>nvd</id>" ~/.m2/settings.xml); \
+	if [ $$CHECK_NVD_KEY -eq 0 ]; then echo "=== NVD API key is missing in settings.xml ==="; \
+		echo "Security check: This plugin scans your project’s dependencies for known vulnerabilities, "; \
+		echo "helping you identify and mitigate potential security risks."; \
+		echo "Request an API key on https://nvd.nist.gov/developers/request-an-api-key"; \
+		echo "It's for free!"; \
+		echo "Add the NVD API key to the settings.xml as follows:"; \
+		echo "<server>"; \
+		echo "  <id>nvd</id>"; \
+		echo "  <password>your-api-key</password>"; \
+		echo "</server>"; \
+		exit 1; \
+	else \
+		echo "NVD API key is already configured in settings.xml."; \
+		export MAVEN_OPTS="--add-modules jdk.incubator.vector" && mvn verify -P security -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false; \
+	fi;
 
 # ================================
 # Sub commands
