@@ -1,12 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.wellniak</groupId>
 	<artifactId>large-random-json-generator</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>Randomm JSON Generator Service</name>
 	<description>Spring Boot project for generating random JSON in a PostgreSQL
 		for perfomance testing</description>
@@ -143,7 +141,7 @@
 		<connection>scm:git:${scm.username}@${scm.host}:${scm.repo}.git</connection>
 		<developerConnection>scm:git:${scm.username}@${scm.host}:${scm.repo}.git</developerConnection>
 		<url>ssh://${scm.username}@${scm.host}/${scm.repo}</url>
-		<tag>HEAD</tag>
+		<tag>1.0</tag>
 	</scm>
 
 	<!-- Build Plugins -->
