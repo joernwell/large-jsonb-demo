@@ -46,7 +46,7 @@ Default configruation is
 
 A `Makefile` is provided to streamline the setup and running of Docker services and the Spring Boot application.
 
-Start the application:
+<u>Start the application:</u>
 
   ```bash
   make start
@@ -57,16 +57,24 @@ This command will:
   - Start Docker Compose services (e.g., PostgreSQL).
   - Run the Spring Boot application.
 
-Stop the application:
+<u>Generate 2,000 JSON entries:</u>
+
+  ```bash
+  make generate
+  ```
+  
+This command must be executed in another terminal. See also [Usage](#usage)
+
+<u>Stop the application:</u>
 
   ```bash
   make stop
   ```
 
-Reset the database:
+<u>Clean the Postgres database:</u>
 
   ```bash
-  make reset
+  make clean
   ```
 This command will:
   

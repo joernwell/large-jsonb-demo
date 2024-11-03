@@ -2,9 +2,11 @@ package com.wellniak.json;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -15,18 +17,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = { "management.endpoint.shutdown.enabled=true",
-		"management.endpoints.web.exposure.include=shutdown" })
+@TestPropertySource(properties = {"management.endpoint.shutdown.enabled=true",
+		"management.endpoints.web.exposure.include=shutdown"})
 @RunWith(SpringRunner.class)
 class JsonGeneratorIT extends BaseIntegrationTest {
 
@@ -53,15 +47,15 @@ class JsonGeneratorIT extends BaseIntegrationTest {
 
 		assertThat(jsonTestRepository.count()).isEqualTo(10);
 
-		JsonTest first = jsonTestRepository.findAll().stream().findFirst().orElse(null);
-		String attribute22 = getNestedAttribute(first);
-		List<JsonTest> jsonTestsForAttr22 = jsonTestRepository.findByAttributeNestedValue(attribute22);
+		var first = jsonTestRepository.findAll().stream().findFirst().orElse(null);
+		var attribute22 = getNestedAttribute(first);
+		var jsonTestsForAttr22 = jsonTestRepository.findByAttributeNestedValue(attribute22);
 		assertThat(jsonTestsForAttr22).size().isNotZero();
 	}
 
 	String getNestedAttribute(JsonTest jsonTest) throws JsonMappingException, JsonProcessingException {
-		JsonNode rootNode = objectMapper.readTree(jsonTest.getData());
-		JsonNode attribute2_2Node = rootNode.path("attribute_1_4").path("attribute_2_2");
+		var rootNode = objectMapper.readTree(jsonTest.getData());
+		var attribute2_2Node = rootNode.path("attribute_1_4").path("attribute_2_2");
 		if (attribute2_2Node.isMissingNode()) {
 			return null; // Or handle missing attribute as needed
 		}

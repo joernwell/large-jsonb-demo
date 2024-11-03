@@ -7,6 +7,14 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 
+/**
+ * Base class for integration tests that require a PostgreSQL database.
+ * <p>
+ * This class uses Testcontainers to start and stop a PostgreSQL container for testing purposes. It sets up the
+ * container with a dummy database and configures Spring properties dynamically to connect to it.
+ * <p>
+ * Other integration test classes can extend this class to reuse the container setup and configuration.
+ */
 abstract class BaseIntegrationTest {
 
 	@SuppressWarnings("resource")

@@ -1,3 +1,8 @@
+# Docker Compose configuration to set up a PostgreSQL database service.
+# This file defines a PostgreSQL container with persistent storage and environment
+# variables for easy setup. The service is configured to restart automatically
+# and exposes the database on port 5432. A Docker volume is used to persist data,
+# ensuring that database contents remain intact between container restarts.
 services:
   postgres:
     image: postgres:15
