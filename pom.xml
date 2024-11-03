@@ -4,7 +4,7 @@
 
 	<groupId>com.wellniak</groupId>
 	<artifactId>large-random-json-generator</artifactId>
-	<version>1.1</version>
+	<version>1.2-SNAPSHOT</version>
 	<name>Randomm JSON Generator Service</name>
 	<description>Spring Boot project for generating random JSON in a PostgreSQL
 		for perfomance testing</description>
@@ -144,7 +144,7 @@
 		<connection>scm:git:${scm.username}@${scm.host}:${scm.repo}.git</connection>
 		<developerConnection>scm:git:${scm.username}@${scm.host}:${scm.repo}.git</developerConnection>
 		<url>ssh://${scm.username}@${scm.host}/${scm.repo}</url>
-		<tag>1.1</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<!-- Build Plugins -->
