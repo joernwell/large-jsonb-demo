@@ -2,9 +2,8 @@ package com.wellniak.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class JsonGeneratorService {
+	private static final int STRING_TYPE = 0;
+	private static final int NUMERIC_STRING_TYPE = 1;
+	private static final int BOOLEAN_TYPE = 2;
+	private static final int NESTED_JSON_TYPE = 3;
+
 	private static final int NUM_ATTRIBUTES = 20;
 	private static final Map<String, Integer> ATTRIBUTE_TYPES = new HashMap<>();
 	private static final Random RANDOM = new Random();
@@ -32,23 +36,23 @@ public class JsonGeneratorService {
 	private JsonTestRepository jsonTestRepository;
 
 	@Autowired
-	private ObjectMapper objectMapper;
+	private JsonTestDataService jsonTestDataService;
 
-	@PersistenceContext
-	private EntityManager entityManager;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	static {
 		// Fixed type assignments for the 50 attributes
-		ATTRIBUTE_TYPES.put("attribute_1", 0); // String
-		ATTRIBUTE_TYPES.put("attribute_2", 1); // Numeric String
-		ATTRIBUTE_TYPES.put("attribute_3", 0); // String
-		ATTRIBUTE_TYPES.put("attribute_4", 3); // Nested JSON
-		ATTRIBUTE_TYPES.put("attribute_5", 0); // String
-		ATTRIBUTE_TYPES.put("attribute_6", 1); // Numeric String
-		ATTRIBUTE_TYPES.put("attribute_7", 2); // Boolean
-		ATTRIBUTE_TYPES.put("attribute_8", 0); // String
-		ATTRIBUTE_TYPES.put("attribute_9", 3); // Nested JSON
-		ATTRIBUTE_TYPES.put("attribute_10", 1); // Integer
+		ATTRIBUTE_TYPES.put("attribute_1", STRING_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_2", NUMERIC_STRING_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_3", STRING_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_4", NESTED_JSON_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_5", STRING_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_6", NUMERIC_STRING_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_7", BOOLEAN_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_8", STRING_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_9", NESTED_JSON_TYPE);
+		ATTRIBUTE_TYPES.put("attribute_10", NUMERIC_STRING_TYPE);
 
 		// Additional 40 randomly assigned attributes
 		for (var i = 11; i <= NUM_ATTRIBUTES; i++) {
@@ -64,35 +68,20 @@ public class JsonGeneratorService {
 	 * Boolean, Nested JSON). The JSON data is converted to a string and stored in {@link JsonTest} entities.
 	 *
 	 * @param count the number of JSON entries to generate and save
+	 * @throws SQLException if the JSON could not be written or the connection can not be established
 	 * @throws RuntimeException if an error occurs during JSON conversion
 	 */
 	public void generateAndSaveJson(int count) {
 		List<JsonTest> batchList = new ArrayList<>(count);
-
 		for (var i = 0; i < count; i++) {
 			var jsonData = generateRandomJson(1, 4);
-
-			// Use a StringWriter and JsonGenerator for streaming
-			String jsonString;
-			try (var writer = new StringWriter(); var generator = objectMapper.getFactory().createGenerator(writer)) {
-
-				objectMapper.writeValue(generator, jsonData); // Stream JSON to writer
-				jsonString = writer.toString();
-
-			} catch (Exception e) {
-				throw new RuntimeException("Error converting JSON to string", e);
-			}
-
-			var jsonTest = new JsonTest();
-			jsonTest.setData(jsonString);
+			var jsonString = convertJsonToString(jsonData);
+			var jsonTest = JsonTest.builder().data(jsonString).build();
 			batchList.add(jsonTest);
 		}
 
 		if (!batchList.isEmpty()) {
-			jsonTestRepository.saveAll(batchList);
-			jsonTestRepository.flush();
-			batchList.clear();
-			entityManager.clear();
+			jsonTestDataService.saveBatch(batchList);
 		}
 	}
 
@@ -130,16 +119,16 @@ public class JsonGeneratorService {
 			}
 
 			switch (valueType) {
-				case 0:
+				case STRING_TYPE:
 					node.put(attributeName, getRandomString(50, 150));
 					break;
-				case 1:
+				case NUMERIC_STRING_TYPE:
 					node.put(attributeName, String.valueOf(RANDOM.nextInt(100000)));
 					break;
-				case 2:
+				case BOOLEAN_TYPE:
 					node.put(attributeName, RANDOM.nextBoolean());
 					break;
-				case 3:
+				case NESTED_JSON_TYPE:
 					if (currentLevel < maxLevel) {
 						node.set(attributeName, generateRandomJson(currentLevel + 1, maxLevel));
 					}
@@ -150,13 +139,6 @@ public class JsonGeneratorService {
 		return node;
 	}
 
-	/**
-	 * Generates a random alphanumeric string of specified length.
-	 *
-	 * @param minLength the minimum length of the generated string
-	 * @param maxLength the maximum length of the generated string
-	 * @return a random alphanumeric string with a length between minLength and maxLength
-	 */
 	private String getRandomString(int minLength, int maxLength) {
 		var length = minLength + RANDOM.nextInt(maxLength - minLength + 1);
 		var sb = new StringBuilder(length);
@@ -164,5 +146,18 @@ public class JsonGeneratorService {
 			sb.append((char) ('a' + RANDOM.nextInt(26)));
 		}
 		return sb.toString();
+	}
+
+	private String convertJsonToString(ObjectNode jsonData) {
+		String jsonString;
+		try (var writer = new StringWriter(); var generator = objectMapper.getFactory().createGenerator(writer)) {
+
+			objectMapper.writeValue(generator, jsonData); // Stream JSON to writer
+			jsonString = writer.toString();
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error converting JSON to string", e);
+		}
+		return jsonString;
 	}
 }

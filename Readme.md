@@ -101,14 +101,16 @@ If you don't provide any query parameters, the service defaults to generating 10
   - `bulkSize` (optional): Specifies the number of records to save in each batch (default is 100).
 
 Generate JSON with Default Parameters
-   ```bash
-   curl 'http://localhost:8080/generate-json'
-   ```
+
+```bash
+curl 'http://localhost:8080/generate-json'
+```
 
 Generate JSON with custom `numRecords` and `bulkSize`
-   ```bash
-   curl 'http://localhost:8080/generate-json?numRecords=5000&bulkSize=200'
-   ```
+
+```bash
+curl 'http://localhost:8080/generate-json?numRecords=5000&bulkSize=200'
+```
 
 #### Useful SQL statements
 

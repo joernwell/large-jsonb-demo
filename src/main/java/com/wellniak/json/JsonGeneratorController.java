@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Log4j2
-public class JsonController {
+public class JsonGeneratorController {
 
 	@Autowired
 	private JsonGeneratorService jsonGeneratorService;
@@ -30,7 +30,7 @@ public class JsonController {
 	 * This endpoint triggers the generation of JSON records in batches based on the provided {@code bulkSize}. If
 	 * {@code numRecords} is not evenly divisible by {@code bulkSize}, any remaining records are processed separately.
 	 * The total count of records after the operation is also returned.
-	 * 
+	 *
 	 * @param numRecords the total number of JSON records to generate (default: 10,000)
 	 * @param bulkSize the size of each batch to be generated and saved (default: 100)
 	 * @return a {@link JsonResponse} object containing the number of new records, the total records in the database,
