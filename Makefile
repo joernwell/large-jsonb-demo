@@ -17,7 +17,7 @@ CHECK_NVD_KEY := $(shell grep -c "<id>nvd</id>" ~/.m2/settings.xml || echo 0)
 .PHONY: help
 help: 
 	@echo "Available commands:"
-	@grep -E '^\.PHONY: [A-Za-z_-]+.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ": |## "}; {printf "  %-15s %s\n", $$2, $$3}'
+	@grep -E '^\.PHONY: [A-Za-z_-]+.*## ' $(lastword $(MAKEFILE_LIST))  | awk 'BEGIN {FS = ": |## "}; {printf "  %-15s %s\n", $$2, $$3}'
 
 # ================================
 # Main commands
