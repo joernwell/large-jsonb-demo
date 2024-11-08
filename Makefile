@@ -1,73 +1,83 @@
 PORT = 8080
 HOST = localhost
 
+CHECK_NVD_KEY := $(shell grep -c "<id>nvd</id>" ~/.m2/settings.xml || echo 0)
+
 # ================================
-# Main commands
+# Help
 # ================================
 
+.PHONY: start ## Start Docker and Spring Boot
+.PHONY: stop ## Stop Spring Boot and Docker services
+.PHONY: clean ## Stop Docker and remove volumes
+.PHONY: it ## Perform integration tests
+.PHONY: generate ## Generate 2,000 JSON entries in the database
+.PHONY: release ## Prepares and performs a release without automatically pushing changes to Git
+.PHONY: security ## Performs security check. Make sure that the NVD API key is stored in the settings.xml
 .PHONY: help
 help: 
 	@echo "Available commands:"
 	@grep -E '^\.PHONY: [A-Za-z_-]+.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ": |## "}; {printf "  %-15s %s\n", $$2, $$3}'
 
-.PHONY: start ## Start Docker and Spring Boot
+# ================================
+# Main commands
+# ================================
+
 start: 
 	$(MAKE) docker-up 
 	$(MAKE) spring-boot
 
-.PHONY: stop ## Stop Spring Boot and Docker services
 stop: 
 	@$(MAKE) spring-boot-stop
 	@$(MAKE) docker-down
 
-.PHONY: clean ## Stop Docker and remove volumes
 clean: 
 	@$(MAKE) spring-boot-stop
 	@echo "Removing Docker volumes..."
 	@docker-compose down -v
 
-.PHONY: it ## Perform integration tests
 it: 
 	@mvn clean verify
 
-.PHONY: generate ## Generate 2,000 JSON entries in the database
 generate: 
-	@echo "Waiting for application to start on port ${HOST}:${PORT}..."
-	@while ! nc -z ${HOST} ${PORT}; do \
-		echo "Port ${PORT} is not open. Waiting..."; \
-		sleep 1; \
-	done
-	@echo "Application is running on port ${PORT}. Proceeding with JSON generation..."
+	@$(MAKE) wait-for-application
 	@curl "http://${HOST}:${PORT}/generate-json?numRecords=2000&bulkSize=500"
 	@echo ""
 	
-.PHONY: release ## Prepares and performs a release without automatically pushing changes to Git
 release:
 	@$(MAKE) mvn-release
+
+security:
+	@$(MAKE) check-nvd-key
+	@echo "NVD API key is already configured in settings.xml."
+	@export MAVEN_OPTS="--add-modules jdk.incubator.vector" && mvn verify -P security -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false;
 
 # ================================
 # Sub commands
 # ================================
 
 .PHONY: spring-boot
+.PHONY: spring-boot-stop
+.PHONY: docker-up
+.PHONY: docker-down
+.PHONY: mvn-release 
+.PHONY: check-version
+.PHONY: check_nvd_key
+
 spring-boot:
 	@mvn clean spring-boot:run
 
-.PHONY: spring-boot-stop
 spring-boot-stop:
 	@echo "Stopping Spring Boot application..."
 	@curl -X POST http://$(HOST):$(PORT)/actuator/shutdown || echo "Application is not running or shutdown endpoint is disabled." || true
 	@echo ""
 
-.PHONY: docker-up
 docker-up:
 	@docker-compose up -d || true
 
-.PHONY: docker-down
 docker-down:
 	@docker-compose down || true
 	
-.PHONY: mvn-release 
 mvn-release:
 	@mvn release:prepare -DpushChanges=false
 	@$(MAKE) check-version
@@ -91,7 +101,6 @@ mvn-release:
 	@echo "This will revert the version changes and delete any tags created during the release process."
 	@echo ""
 	
-.PHONY: check-version
 check-version:
 	@tag_name=$$(grep "^scm.tag=" release.properties | cut -d'=' -f2); \
 	app_version=$$(grep "^info.app.version=" src/main/resources/application.properties | cut -d'=' -f2); \
@@ -107,3 +116,27 @@ check-version:
 		echo "This will revert the version changes and delete any tags created during the release process."; \
 		exit 1; \
 	fi
+	
+check-nvd-key:
+	@CHECK_NVD_KEY=$$(grep -c "<id>nvd</id>" ~/.m2/settings.xml); \
+	if [ $$CHECK_NVD_KEY -eq 0 ]; then echo "=== NVD API key is missing in settings.xml ==="; \
+		echo "Security check: This plugin scans your project’s dependencies for known vulnerabilities, "; \
+		echo "helping you identify and mitigate potential security risks."; \
+		echo "Request an API key on https://nvd.nist.gov/developers/request-an-api-key"; \
+		echo "It's for free!"; \
+		echo "Add the NVD API key to the settings.xml as follows:"; \
+		echo "<server>"; \
+		echo "  <id>nvd</id>"; \
+		echo "  <password>your-api-key</password>"; \
+		echo "</server>"; \
+		exit 1; \
+	fi;
+
+wait-for-application:
+	@echo "Waiting for application to start on port ${HOST}:${PORT}..."
+	@while ! nc -z ${HOST} ${PORT}; do \
+		echo "Port ${PORT} is not open. Waiting..."; \
+		sleep 1; \
+	done
+	@echo "Application is running on port ${PORT}. Proceeding with JSON generation..."
+
