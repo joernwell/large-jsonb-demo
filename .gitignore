@@ -82,3 +82,5 @@ Thumbs.db
 # Apple MFS files
 */.apdisk
 /.factorypath
+
+.sync-conflict*
