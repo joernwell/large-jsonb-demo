@@ -24,13 +24,13 @@
 		<scm.username>${env.SCM_USERNAME:-git}</scm.username>
 		<scm.repo>${env.SCM_REPO:-joernwell/large-jsonb-demo}</scm.repo>
 
-		<spring.boot.version>3.3.5</spring.boot.version>
-		<hibernate.types.version>3.8.3</hibernate.types.version>
+		<spring.boot.version>3.4.4</spring.boot.version>
+		<hibernate.types.version>3.9.9</hibernate.types.version>
 		<maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
-		<maven.failsafe.plugin.version>3.5.2</maven.failsafe.plugin.version>
+		<maven.failsafe.plugin.version>3.5.3</maven.failsafe.plugin.version>
 		<maven.release.plugin.version>3.1.1</maven.release.plugin.version>
 		<maven.surefire.plugin.version>3.5.2</maven.surefire.plugin.version>
-		<dependency.check.maven.version>11.1.0</dependency.check.maven.version>
+		<dependency.check.maven.version>12.1.1</dependency.check.maven.version>
 	</properties>
 
 	<dependencyManagement>
