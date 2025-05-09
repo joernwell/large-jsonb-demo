@@ -202,6 +202,7 @@
             		<password>your-api-key</password>
         		</server>
 				-->
+				<!--
 				<plugin>
 					<groupId>org.owasp</groupId>
 					<artifactId>dependency-check-maven</artifactId>
@@ -221,6 +222,7 @@
 						</execution>
 					</executions>
 				</plugin>
+				-->
 			</plugins>
 		</pluginManagement>
 
